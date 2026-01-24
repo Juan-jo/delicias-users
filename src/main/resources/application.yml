@@ -1,0 +1,44 @@
+quarkus:
+  http:
+    port: 3000
+
+  datasource:
+    db-kind: postgresql
+    username: postgres
+    password: password
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/delicias_users
+      min-size: 2
+      max-size: 20
+
+  liquibase:
+    migrate-at-start: true
+    change-log: db/changelog/db.changelog-master.yaml
+    validate-on-migrate: true
+
+  hibernate-orm:
+    database:
+      generation: none
+    log:
+      sql: true
+
+  smallrye-jwt:
+    enabled: true
+
+  oidc:
+    auth-server-url: http://192.168.101.100:9001/realms/delicias-app
+    client-id: deliciasapp-auth-client
+
+    # Indica que este microservicio solo valida tokens (Resource Server)
+    application-type: service
+
+    # Para validar el token localmente sin llamar a Keycloak cada vez (mejor rendimiento)
+    token:
+      issuer: http://192.168.101.100:9001/realms/delicias-app
+
+  security:
+    auth:
+      permission:
+        authenticated:
+          paths: [ "/api/*" ]
+          policy: authenticated

@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 24012026_01
+      author: jdev
+      changes:
+        - sql:
+            sql: >-
+              create extension if not exists "uuid-ossp";
+  - changeSet:
+      id: 24012026_02
+      author: jdev
+      changes:
+        - createTable:
+            tableName: user_info
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_user_info_id
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: zone_id
+                  type: INTEGER
+              - column:
+                  name: register_lat
+                  type: DECIMAL(9,6)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: register_lng
+                  type: DECIMAL(9,6)
+                  constraints:
+                    nullable: false
