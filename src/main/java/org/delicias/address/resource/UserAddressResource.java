@@ -1,4 +1,4 @@
-package org.delicias.address.api;
+package org.delicias.address.resource;
 
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
@@ -15,7 +15,7 @@ import org.delicias.common.validation.OnUpdate;
 @Path("/api/users/addresses")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserAddressApi {
+public class UserAddressResource {
 
     @Inject
     UserAddressService service;

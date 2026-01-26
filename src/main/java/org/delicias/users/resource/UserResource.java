@@ -1,4 +1,4 @@
-package org.delicias.users.api;
+package org.delicias.users.resource;
 
 import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Path("/api/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class UserApi {
+public class UserResource {
 
     @Inject
     UserInfoService service;

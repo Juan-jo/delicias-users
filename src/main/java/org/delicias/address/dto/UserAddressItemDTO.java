@@ -1,4 +1,11 @@
 package org.delicias.address.dto;
 
-public class UserAddressItemDTO {
-}
+import lombok.Builder;
+
+@Builder
+public record UserAddressItemDTO(
+        Integer id,
+        String name,
+        String address,
+        String street
+) { }
