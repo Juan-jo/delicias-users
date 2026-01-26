@@ -12,7 +12,7 @@ import org.delicias.users.service.UserInfoService;
 import java.util.UUID;
 
 
-@Path("/users")
+@Path("/api/users")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UserApi {
@@ -33,6 +33,5 @@ public class UserApi {
         service.delete(id);
         return Response.noContent().build();
     }
-
 
 }
