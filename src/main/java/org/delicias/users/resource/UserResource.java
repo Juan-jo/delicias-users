@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.delicias.common.dto.UserZoneDTO;
 import org.delicias.users.dto.CreateUserInfoReqDTO;
 import org.delicias.users.service.UserInfoService;
 
@@ -32,6 +33,15 @@ public class UserResource {
     public Response delete(@PathParam("id") UUID id) {
         service.delete(id);
         return Response.noContent().build();
+    }
+
+
+    // TODO: Use in Rest Client
+    @GET
+    @Path("/{id}/zone")
+    @Authenticated
+    public UserZoneDTO getUserZone(@PathParam("id") UUID userId) {
+        return service.getUserZone(userId);
     }
 
 }

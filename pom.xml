@@ -13,6 +13,15 @@
 
 
     <dependencies>
+
+        <!--Start Delicias library-->
+        <dependency>
+            <groupId>com.delicias</groupId>
+            <artifactId>delicias-service-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <!--End Delicias library-->
+
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest</artifactId>
