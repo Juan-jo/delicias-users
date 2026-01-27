@@ -4,10 +4,10 @@ quarkus:
 
   datasource:
     db-kind: postgresql
-    username: postgres
-    password: password
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
     jdbc:
-      url: jdbc:postgresql://localhost:5432/delicias_users
+      url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
       min-size: 2
       max-size: 20
 
@@ -26,15 +26,15 @@ quarkus:
     enabled: true
 
   oidc:
-    auth-server-url: http://192.168.101.100:9001/realms/delicias-app
-    client-id: deliciasapp-auth-client
+    auth-server-url: ${AUTH_SERVER_URL}/realms/${REALM}
+    client-id: ${AUTH_CLIENT_ID}
 
     # Indica que este microservicio solo valida tokens (Resource Server)
     application-type: service
 
     # Para validar el token localmente sin llamar a Keycloak cada vez (mejor rendimiento)
     token:
-      issuer: http://192.168.101.100:9001/realms/delicias-app
+      issuer: ${AUTH_SERVER_URL}/realms/${REALM}
 
   security:
     auth:
@@ -42,3 +42,18 @@ quarkus:
         authenticated:
           paths: [ "/api/*" ]
           policy: authenticated
+
+  index-dependency:
+    core:
+      group-id: com.delicias
+      artifact-id: delicias-service-core
+
+  rest-client:
+    users-service:
+      url: ${CLIENT_API_USERS_URL}
+
+delicias:
+  supabase:
+    url: ${SUPABASE_URL}
+    key: ${SUPABASE_KEY}
+    bucket: ${SUPABASE_BUCKET}
