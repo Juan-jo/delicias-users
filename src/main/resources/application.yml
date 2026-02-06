@@ -64,6 +64,8 @@ quarkus:
       scope: jakarta.inject.Singleton
     users-service:
       url: ${CLIENT_API_USERS_URL}
+    products-service:
+      url: ${CLIENT_API_PRODUCTS_URL}
 
 
 delicias:
