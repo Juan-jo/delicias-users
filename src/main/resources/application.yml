@@ -66,6 +66,8 @@ quarkus:
       url: ${CLIENT_API_USERS_URL}
     products-service:
       url: ${CLIENT_API_PRODUCTS_URL}
+    restaurants-service:
+      url: ${CLIENT_API_RESTAURANTS_URL}
 
 
 delicias:
