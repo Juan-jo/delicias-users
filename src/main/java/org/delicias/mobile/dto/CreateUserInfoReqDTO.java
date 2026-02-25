@@ -1,4 +1,4 @@
-package org.delicias.users.dto;
+package org.delicias.mobile.dto;
 
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;

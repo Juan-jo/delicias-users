@@ -8,7 +8,7 @@ import org.delicias.SecurityContextService;
 import org.delicias.common.dto.user.UserZoneDTO;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
-import org.delicias.users.dto.CreateUserInfoReqDTO;
+import org.delicias.mobile.dto.CreateUserInfoReqDTO;
 
 import java.util.UUID;
 

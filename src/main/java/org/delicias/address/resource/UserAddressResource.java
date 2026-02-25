@@ -12,6 +12,7 @@ import org.delicias.address.service.UserAddressService;
 import org.delicias.common.validation.OnCreate;
 import org.delicias.common.validation.OnUpdate;
 
+@Authenticated
 @Path("/api/users/addresses")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,7 +22,6 @@ public class UserAddressResource {
     UserAddressService service;
 
     @GET
-    @Authenticated
     public Response userAddresses() {
 
         var addresses = service.listUserAddress();
@@ -30,7 +30,6 @@ public class UserAddressResource {
     }
 
     @POST
-    @Authenticated
     public Response create(
             @Valid @ConvertGroup(to = OnCreate.class) CreateUserAddressReqDTO request) {
 
@@ -39,7 +38,6 @@ public class UserAddressResource {
     }
 
     @PUT
-    @Authenticated
     public Response update(
             @Valid @ConvertGroup(to = OnUpdate.class) CreateUserAddressReqDTO request) {
 
@@ -49,11 +47,32 @@ public class UserAddressResource {
     }
 
     @DELETE
-    @Authenticated
     @Path("/{id}")
     public Response delete(@PathParam("id") Integer id) {
 
         service.delete(id);
         return Response.noContent().build();
     }
+
+    // TODO: Use in Rest Client
+    @GET
+    @Path("/default")
+    public Response getDefaultAddress() {
+
+        return Response.ok(
+                service.getDefaultAddress()
+        ).build();
+    }
+
+    // TODO: Use in Rest Client
+    @GET
+    @Path("/{addressId}/shopping")
+    public Response getShoppingAddress(
+            @PathParam("addressId") Integer addressId
+    ) {
+        return Response.ok(
+                service.getShoppingAddressDTO(addressId)
+        ).build();
+    }
+
 }

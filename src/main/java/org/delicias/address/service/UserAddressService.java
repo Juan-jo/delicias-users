@@ -7,12 +7,16 @@ import jakarta.ws.rs.NotFoundException;
 import org.delicias.SecurityContextService;
 import org.delicias.address.domain.model.UserAddress;
 import org.delicias.address.domain.repository.UserAddressRepository;
+import org.delicias.address.dto.ConfirmAddressDTO;
 import org.delicias.address.dto.CreateUserAddressReqDTO;
 import org.delicias.address.dto.UserAddressItemDTO;
+import org.delicias.common.dto.user.DefaultAddressDTO;
+import org.delicias.common.dto.user.UserShoppingAddressDTO;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.util.Optional;
 import java.util.Set;
@@ -113,5 +117,66 @@ public class UserAddressService {
         if (!deleted) {
             throw new NotFoundException("User address not found");
         }
+    }
+
+    public ConfirmAddressDTO confirmAddress(
+            double latitude,
+            double longitude
+    ) {
+
+        // TODO Add google maps for search address
+
+        return new ConfirmAddressDTO(
+                "[Test] - Col. name",
+                "Via Sin Nombre"
+        );
+    }
+
+    public DefaultAddressDTO getDefaultAddress() {
+
+        UUID userUUID = UUID.fromString(security.userId());
+
+        UserInfo user = userInfoRepository.findById(userUUID);
+
+        if (user == null) {
+            throw new NotFoundException("User Not Found");
+        }
+
+        return Optional.ofNullable(user.getDefaultUserAddress())
+                .map(it -> DefaultAddressDTO.builder()
+                        .exists(true)
+                        .latitude(it.getPosition().getY())
+                        .longitude(it.getPosition().getX())
+                        .data(DefaultAddressDTO.Data.builder()
+                                .id(it.getId())
+                                .name(switch (it.getAddressType()) {
+                                    case HOME, DEPTO, OTHER -> it.getDetails();
+                                    case OFFICE -> it.getCompanyName();
+                                })
+                                .address(it.getAddress())
+                                .addressType(it.getAddressType().name())
+                                .build())
+                        .build())
+                .orElse(DefaultAddressDTO.builder()
+                        .exists(false)
+                        .build());
+    }
+
+    public UserShoppingAddressDTO getShoppingAddressDTO(Integer addressId) {
+
+        UserAddress address = repository.findById(addressId);
+
+        if (address == null) {
+            throw new NotFoundException("User Address Not Found");
+        }
+
+        return new UserShoppingAddressDTO(
+                switch (address.getAddressType()) {
+                    case HOME, DEPTO, OTHER -> address.getDetails();
+                    case OFFICE -> address.getCompanyName();
+                },
+                address.getAddress(),
+                address.getAddressType().name()
+        );
     }
 }

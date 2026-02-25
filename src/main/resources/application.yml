@@ -60,6 +60,15 @@ quarkus:
       url: ${CLIENT_API_RESTAURANTS_URL}
 
 
+  keycloak:
+    admin-client:
+      server-url: ${AUTH_SERVER_URL}
+      realm: ${REALM}
+      client-id: ${ADMIN_CLIENT_ID} # Un cliente con roles de 'manage-users'
+      client-secret: ${ADMIN_CLIENT_SECRET}
+      grant-type: CLIENT_CREDENTIALS
+
+
 delicias:
   supabase:
     url: ${SUPABASE_URL}

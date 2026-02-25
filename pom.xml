@@ -136,6 +136,16 @@
             <artifactId>quarkus-rest-client</artifactId>
         </dependency>
 
+
+        <!-- Keycloak Admin Users-->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-keycloak-admin-rest-client</artifactId>
+        </dependency>
+
+        <!-- Keycloak admin-->
+
+
         <!--end added-->
 
 

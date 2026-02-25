@@ -7,7 +7,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.delicias.common.dto.user.UserZoneDTO;
-import org.delicias.users.dto.CreateUserInfoReqDTO;
+import org.delicias.mobile.dto.CreateUserInfoReqDTO;
 import org.delicias.users.service.UserInfoService;
 
 import java.util.UUID;
