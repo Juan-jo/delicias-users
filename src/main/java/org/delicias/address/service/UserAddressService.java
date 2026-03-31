@@ -18,9 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ApplicationScoped
@@ -171,6 +169,7 @@ public class UserAddressService {
         }
 
         return new UserShoppingAddressDTO(
+                address.getId(),
                 switch (address.getAddressType()) {
                     case HOME, DEPTO, OTHER -> address.getDetails();
                     case OFFICE -> address.getCompanyName();
@@ -179,4 +178,60 @@ public class UserAddressService {
                 address.getAddressType().name()
         );
     }
+
+    public Map<String, Object> findWithFields(
+            Integer addressId, String fields
+    ) {
+
+        Set<String> fieldSet = fields != null
+                ? new HashSet<>(Arrays.asList(fields.split(",")))
+                : null;
+
+        UserAddress address = repository.findById(addressId);
+
+        if(address == null) {
+            throw new NotFoundException("Address Not Found");
+        }
+
+        return filterFields(address, fieldSet);
+    }
+
+    private Map<String, Object> filterFields(UserAddress r, Set<String> fields) {
+        Map<String, Object> map = new HashMap<>();
+
+        if (fields != null) {
+
+            if (fields.contains("id"))
+                map.put("id", r.getId());
+
+            if (fields.contains("type_address"))
+                map.put("type_address", r.getAddressType());
+
+            if (fields.contains("details"))
+                map.put("details", switch (r.getAddressType()) {
+                    case HOME, DEPTO, OTHER -> r.getDetails();
+                    case OFFICE -> r.getCompanyName();
+                });
+
+            if (fields.contains("street"))
+                map.put("street", r.getStreet());
+
+            if (fields.contains("address"))
+                map.put("address", r.getAddress());
+
+            if (fields.contains("latitude"))
+                map.put("latitude", Optional.ofNullable(r.getPosition())
+                        .map(Point::getY).orElse(Double.NaN));
+
+            if (fields.contains("longitude"))
+                map.put("longitude", Optional.ofNullable(r.getPosition())
+                        .map(Point::getX).orElse(Double.NaN));
+
+            if (fields.contains("indications"))
+                map.put("indications", r.getIndications());
+        }
+
+        return map;
+    }
+
 }

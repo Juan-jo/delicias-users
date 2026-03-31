@@ -75,4 +75,16 @@ public class UserAddressResource {
         ).build();
     }
 
+    // TODO: Use in Core Rest Client
+    @GET
+    @Path("/{addressId}/fields")
+    public Response getFields(
+            @PathParam("addressId") Integer addressId,
+            @QueryParam("fields") @DefaultValue("") String fields
+    ) {
+        return Response.ok(
+                service.findWithFields(addressId, fields)
+        ).build();
+    }
+
 }
