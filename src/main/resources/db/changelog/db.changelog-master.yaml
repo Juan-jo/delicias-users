@@ -120,3 +120,23 @@ databaseChangeLog:
              constraintName: user_info__user_addres_id_fkey
              referencedColumnNames: id
              referencedTableName: user_address
+
+  -  changeSet:
+       id: 24012026_05
+       author: jdev
+       changes:
+         - addColumn:
+             tableName: user_info
+             columns:
+               - column:
+                   name: picture_url
+                   type: VARCHAR
+               - column:
+                   name: name
+                   type: VARCHAR(75)
+               - column:
+                   name: last_name
+                   type: VARCHAR(150)
+               - column:
+                   name: email
+                   type: VARCHAR(100)

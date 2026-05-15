@@ -14,6 +14,7 @@ import org.delicias.common.dto.user.DefaultAddressDTO;
 import org.delicias.common.dto.user.UserShoppingAddressDTO;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -33,6 +34,8 @@ public class UserAddressService {
     @Inject
     SecurityContextService security;
 
+    @ConfigProperty(name = "delicias.defaultPicture")
+    String defaultPicture;
 
     @Transactional
     public void create(CreateUserAddressReqDTO req) {
@@ -125,7 +128,7 @@ public class UserAddressService {
         // TODO Add google maps for search address
 
         return new ConfirmAddressDTO(
-                "[Test] - Col. name",
+                "Address With street #123",
                 "Via Sin Nombre"
         );
     }
@@ -229,6 +232,24 @@ public class UserAddressService {
 
             if (fields.contains("indications"))
                 map.put("indications", r.getIndications());
+
+
+            if(fields.contains("picture_url") || fields.contains("full_name")) {
+
+                UserInfo userInfo = userInfoRepository.findById(UUID.fromString(security.userId()));
+
+                if(fields.contains("picture_url")) {
+                    map.put("picture_url", Optional.ofNullable(userInfo.pictureUrl).orElse(defaultPicture));
+                }
+
+                if(fields.contains("full_name")) {
+                    map.put("full_name",
+                            Optional.ofNullable(userInfo.name).orElse("*") + " " +
+                                    Optional.ofNullable(userInfo.lastName).orElse("*"));
+                }
+
+            }
+
         }
 
         return map;

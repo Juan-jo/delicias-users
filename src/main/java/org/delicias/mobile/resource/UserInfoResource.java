@@ -20,9 +20,6 @@ import org.delicias.mobile.service.UserRegisterService;
 public class UserInfoResource {
 
     @Inject
-    UserKeycloakService keycloakService;
-
-    @Inject
     UserRegisterService registerService;
 
     @Inject
@@ -44,7 +41,7 @@ public class UserInfoResource {
             @Valid UpdateUserInfoReqDTO req
     ) {
 
-        keycloakService.updateUserName(req);
+        registerService.updateInfo(req);
 
         return Response.ok().build();
     }

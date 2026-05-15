@@ -31,4 +31,16 @@ public class UserInfo {
     @ManyToOne
     @JoinColumn(name = "default_user_address_id", referencedColumnName = "id")
     private UserAddress defaultUserAddress;
+
+    @Column(name = "picture_url")
+    public String pictureUrl;
+
+    @Column(name = "name")
+    public String name;
+
+    @Column(name = "last_name")
+    public String lastName;
+
+    @Column(name = "email")
+    public String email;
 }

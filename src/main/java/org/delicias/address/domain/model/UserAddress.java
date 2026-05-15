@@ -36,9 +36,7 @@ public class UserAddress extends PanacheEntityBase {
     @Column(name = "user_uuid")
     private UUID userUUID;
 
-
     @Column(name = "position", columnDefinition = "GEOGRAPHY(Point, 4326)")
-    //@Column(columnDefinition = "geometry(Point, 4326)")
     private Point position;
 
     @Column(name = "type_address")

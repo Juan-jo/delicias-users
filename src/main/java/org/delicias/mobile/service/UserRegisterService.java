@@ -3,8 +3,11 @@ package org.delicias.mobile.service;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 import org.delicias.SecurityContextService;
+import org.delicias.keycloack.UserKeycloakService;
 import org.delicias.mobile.dto.CreateUserInfoReqDTO;
+import org.delicias.mobile.dto.UpdateUserInfoReqDTO;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
 
@@ -19,6 +22,9 @@ public class UserRegisterService {
 
     @Inject
     SecurityContextService security;
+
+    @Inject
+    UserKeycloakService keycloakService;
 
     @Transactional
     public void registerUser(CreateUserInfoReqDTO request) {
@@ -37,6 +43,20 @@ public class UserRegisterService {
 
             repository.persist(user);
         }
+    }
+
+    @Transactional
+    public void updateInfo(UpdateUserInfoReqDTO req) {
+        String userUUID = security.userId();
+
+        UserInfo userCurrent = repository.findByIdOptional(UUID.fromString(userUUID))
+                        .orElseThrow(() -> new NotFoundException("Not Found User"));
+
+        keycloakService.completeRegister(req);
+
+        userCurrent.setName(req.name());
+        userCurrent.setLastName(req.lastName());
+        userCurrent.setEmail(req.email());
     }
 
 }

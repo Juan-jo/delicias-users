@@ -7,10 +7,15 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import org.delicias.SecurityContextService;
+import org.delicias.common.roles.Roles;
 import org.delicias.mobile.dto.UpdateUserInfoReqDTO;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+
+import java.util.List;
 
 
 @ApplicationScoped
@@ -20,16 +25,16 @@ public class UserKeycloakService {
     Keycloak keycloak;
 
     @ConfigProperty(name = "quarkus.keycloak.admin-client.realm")
-    String realm;
+    String REALM;
 
     @Inject
     SecurityContextService security;
 
-    public void updateUserName(UpdateUserInfoReqDTO req) {
+    public void completeRegister(UpdateUserInfoReqDTO req) {
 
         String userId = security.userId();
 
-        UserRepresentation user = keycloak.realm(realm)
+        UserRepresentation user = keycloak.realm(REALM)
                 .users()
                 .get(userId)
                 .toRepresentation();
@@ -45,7 +50,8 @@ public class UserKeycloakService {
 
         try {
             // 3. Intentar la actualización
-            keycloak.realm(realm).users().get(userId).update(user);
+            keycloak.realm(REALM).users().get(userId).update(user);
+            assignRealmRole(userId, Roles.ROLE_MOBILE_USER);
         } catch (WebApplicationException e) {
             Response response = e.getResponse();
 
@@ -62,5 +68,17 @@ public class UserKeycloakService {
 
             throw e; // Relanzar si es un error desconocido
         }
+    }
+
+    public void assignRealmRole(String userId, String roleName) {
+        RealmResource realm = keycloak.realm(REALM);
+
+        RoleRepresentation role = realm.roles().get(roleName).toRepresentation();
+
+        realm.users()
+                .get(userId)
+                .roles()
+                .realmLevel()
+                .add(List.of(role));
     }
 }

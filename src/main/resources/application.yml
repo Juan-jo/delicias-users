@@ -72,6 +72,7 @@ quarkus:
 
 
 delicias:
+  defaultPicture: ${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_BUCKET}/dl.png
   supabase:
     url: ${SUPABASE_URL}
     key: ${SUPABASE_KEY}
