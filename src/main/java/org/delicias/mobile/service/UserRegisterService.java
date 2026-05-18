@@ -4,10 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.delicias.SecurityContextService;
 import org.delicias.keycloack.UserKeycloakService;
 import org.delicias.mobile.dto.CreateUserInfoReqDTO;
 import org.delicias.mobile.dto.UpdateUserInfoReqDTO;
+import org.delicias.rest.security.SecurityContextService;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
 

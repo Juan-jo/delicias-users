@@ -4,8 +4,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
-import org.delicias.SecurityContextService;
 import org.delicias.common.dto.user.UserZoneDTO;
+import org.delicias.rest.security.SecurityContextService;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
 import org.delicias.mobile.dto.CreateUserInfoReqDTO;
@@ -26,7 +26,7 @@ public class UserInfoService {
     public void create(CreateUserInfoReqDTO request) {
 
         String userUUID = security.userId();
-        String email = security.email();
+        //String email = security.email();
 
 
         UserInfo user = UserInfo.builder()
