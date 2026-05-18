@@ -103,6 +103,7 @@ public class UserAddressService {
                             case HOME, DEPTO, OTHER -> it.getDetails();
                             case OFFICE -> it.getCompanyName();
                         })
+                        .addressType(it.getAddressType())
                         .address(it.getAddress())
                         .street(it.getStreet())
                         .build()
