@@ -29,5 +29,7 @@ public record CreateUserAddressReqDTO(
 
         String details,
 
-        String companyName
+        String companyName,
+
+        boolean markAsDefault
 ) { }

@@ -62,22 +62,17 @@ public class UserAddressService {
                 .build();
 
         repository.persist(newAddress);
-        evaluateSetDefaultUserAddress(newAddress);
 
+        if (req.markAsDefault()) {
+            assignDefaultAddress(newAddress);
+        }
     }
 
+    private void assignDefaultAddress(UserAddress address) {
+        UserInfo userInfo = userInfoRepository.findByIdOptional(address.getUserUUID())
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
 
-    private void evaluateSetDefaultUserAddress(UserAddress address) {
-
-        UserInfo userInfo = userInfoRepository.findById(address.getUserUUID());
-
-        if (userInfo == null) {
-            throw new NotFoundException("User not found");
-        }
-
-        if (Optional.ofNullable(userInfo.getDefaultUserAddress()).isEmpty()) {
-            userInfo.setDefaultUserAddress(address);
-        }
+        userInfo.setDefaultUserAddress(address);
     }
 
     @Transactional
@@ -96,6 +91,10 @@ public class UserAddressService {
 
         UUID userUUID = UUID.fromString(security.userId());
 
+        UserInfo userInfo = userInfoRepository.findByIdOptional(userUUID)
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
+
+
         return repository.findByUserUUID(userUUID)
                 .stream().map(it -> UserAddressItemDTO.builder()
                         .id(it.getId())
@@ -106,6 +105,11 @@ public class UserAddressService {
                         .addressType(it.getAddressType())
                         .address(it.getAddress())
                         .street(it.getStreet())
+                        .isDefault(
+                                it.getId().equals(
+                                        Optional.ofNullable(userInfo.getDefaultUserAddress()).map(UserAddress::getId).orElse(-1)
+                                )
+                        )
                         .build()
                 ).collect(Collectors.toSet());
     }

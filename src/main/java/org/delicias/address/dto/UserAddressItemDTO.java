@@ -9,5 +9,6 @@ public record UserAddressItemDTO(
         UserAddressType addressType,
         String name,
         String address,
-        String street
+        String street,
+        boolean isDefault
 ) { }
