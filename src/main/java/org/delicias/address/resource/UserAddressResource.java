@@ -32,9 +32,9 @@ public class UserAddressResource {
     @POST
     public Response create(
             @Valid @ConvertGroup(to = OnCreate.class) CreateUserAddressReqDTO request) {
-
-        service.create(request);
-        return Response.status(Response.Status.CREATED).build();
+        return Response.ok(
+                service.create(request)
+        ).build();
     }
 
     @PUT
@@ -44,6 +44,16 @@ public class UserAddressResource {
         service.update(request);
         return Response.status(Response.Status.OK).build();
 
+    }
+
+    @GET
+    @Path("/{addressId}/change-default")
+    public Response updateDefaultAddress(
+            @PathParam("addressId") Integer addressId
+    ) {
+        return Response.ok(
+                service.updateDefaultAddress(addressId)
+        ).build();
     }
 
     @DELETE

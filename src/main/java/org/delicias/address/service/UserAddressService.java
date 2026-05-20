@@ -11,6 +11,7 @@ import org.delicias.address.dto.CreateUserAddressReqDTO;
 import org.delicias.address.dto.UserAddressItemDTO;
 import org.delicias.common.dto.user.DefaultAddressDTO;
 import org.delicias.common.dto.user.UserShoppingAddressDTO;
+import org.delicias.mobile.dto.CurrentDefaultAddressDTO;
 import org.delicias.rest.security.SecurityContextService;
 import org.delicias.users.domain.model.UserInfo;
 import org.delicias.users.domain.repository.UserInfoRepository;
@@ -38,7 +39,7 @@ public class UserAddressService {
     String defaultPicture;
 
     @Transactional
-    public void create(CreateUserAddressReqDTO req) {
+    public CurrentDefaultAddressDTO create(CreateUserAddressReqDTO req) {
 
         GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -62,17 +63,56 @@ public class UserAddressService {
                 .build();
 
         repository.persist(newAddress);
-
-        if (req.markAsDefault()) {
-            assignDefaultAddress(newAddress);
-        }
+        return evaluateDefaultAddress(newAddress);
     }
 
-    private void assignDefaultAddress(UserAddress address) {
+    private CurrentDefaultAddressDTO evaluateDefaultAddress(UserAddress address) {
+        UserInfo userInfo = userInfoRepository.findByIdOptional(address.getUserUUID())
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
+
+        if(userInfo.getDefaultUserAddress() == null) {
+            userInfo.setDefaultUserAddress(address);
+            return CurrentDefaultAddressDTO.builder()
+                    .hasDefaultAddress(true)
+                    .typeAddress(address.getAddressType())
+                    .addressDesc(switch (address.getAddressType()) {
+                        case HOME, DEPTO, OTHER -> address.getDetails();
+                        case OFFICE -> address.getCompanyName();
+                    })
+                    .build();
+        }
+
+        return CurrentDefaultAddressDTO.builder()
+                .hasDefaultAddress(false)
+                .build();
+    }
+
+    @Transactional
+    public CurrentDefaultAddressDTO updateDefaultAddress(
+            Integer addressId
+    ) {
+
+        UUID userUUID = UUID.fromString(security.userId());
+
+        UserAddress address = repository.findById(addressId);
+
+        if (address == null || !userUUID.equals(address.getUserUUID())) {
+            throw new NotFoundException("User Address Not Found");
+        }
+
         UserInfo userInfo = userInfoRepository.findByIdOptional(address.getUserUUID())
                 .orElseThrow(() -> new NotFoundException("User Not Found"));
 
         userInfo.setDefaultUserAddress(address);
+
+        return CurrentDefaultAddressDTO.builder()
+                .hasDefaultAddress(true)
+                .typeAddress(address.getAddressType())
+                .addressDesc(switch (address.getAddressType()) {
+                    case HOME, DEPTO, OTHER -> address.getDetails();
+                    case OFFICE -> address.getCompanyName();
+                })
+                .build();
     }
 
     @Transactional
@@ -172,9 +212,9 @@ public class UserAddressService {
 
         UserAddress address = repository.findById(addressId);
 
-        if (address == null) {
-            throw new NotFoundException("User Address Not Found");
-        }
+        UUID userUUID = UUID.fromString(security.userId());
+        UserInfo user = userInfoRepository.findById(userUUID);
+
 
         return new UserShoppingAddressDTO(
                 address.getId(),
