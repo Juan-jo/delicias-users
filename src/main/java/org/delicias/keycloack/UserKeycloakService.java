@@ -7,6 +7,7 @@ import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import org.delicias.common.roles.Roles;
+import org.delicias.exception.EmailAlreadyExistsException;
 import org.delicias.mobile.dto.UpdateUserInfoReqDTO;
 import org.delicias.rest.security.SecurityContextService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -30,7 +31,11 @@ public class UserKeycloakService {
     @Inject
     SecurityContextService security;
 
-    public void completeRegister(UpdateUserInfoReqDTO req) {
+    public void updateData(
+            String name,
+            String lastName,
+            String email
+    ) {
 
         String userId = security.userId();
 
@@ -43,10 +48,15 @@ public class UserKeycloakService {
             throw new NotFoundException("Usuario no encontrado en Keycloak");
         }
 
-
-        user.setFirstName(req.name());
-        user.setLastName(req.lastName());
-        user.setEmail(req.email());
+        if (name != null) {
+            user.setFirstName(name);
+        }
+        if (lastName != null) {
+            user.setLastName(lastName);
+        }
+        if (email != null) {
+            user.setEmail(email);
+        }
 
         try {
             // 3. Intentar la actualización
@@ -57,8 +67,7 @@ public class UserKeycloakService {
 
             // Keycloak devuelve 409 Conflict si el email ya existe
             if (response.getStatus() == Response.Status.CONFLICT.getStatusCode()) {
-
-                throw new WebApplicationException("El email ya existe", Response.Status.CONFLICT);
+                throw new EmailAlreadyExistsException("Email already exists", response.getStatus());
             }
 
             // Otros errores (ej. formato de email inválido si Keycloak lo valida)

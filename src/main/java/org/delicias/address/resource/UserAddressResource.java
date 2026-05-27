@@ -41,9 +41,18 @@ public class UserAddressResource {
     public Response update(
             @Valid @ConvertGroup(to = OnUpdate.class) CreateUserAddressReqDTO request) {
 
-        service.update(request);
-        return Response.status(Response.Status.OK).build();
 
+        return Response.ok(
+                service.update(request)
+        ).build();
+    }
+
+    @GET
+    @Path("/{id}")
+    public Response detail(@PathParam("id") Integer id) {
+        return Response.ok(
+                service.findById(id)
+        ).build();
     }
 
     @GET

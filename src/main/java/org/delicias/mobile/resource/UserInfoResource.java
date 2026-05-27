@@ -12,6 +12,9 @@ import org.delicias.mobile.dto.CreateUserInfoReqDTO;
 import org.delicias.mobile.dto.UpdateUserInfoReqDTO;
 import org.delicias.mobile.service.UserDefaultAddressService;
 import org.delicias.mobile.service.UserRegisterService;
+import org.delicias.users.service.UserInfoService;
+
+import java.util.Map;
 
 @Authenticated
 @Path("/api/users/mobile")
@@ -28,6 +31,27 @@ public class UserInfoResource {
     @Inject
     UserDefaultAddressService userDefaultAddressService;
 
+    @Inject
+    UserInfoService userInfoService;
+
+    @GET
+    @Path("/me")
+    public Response getFields(
+            @QueryParam("fields") @DefaultValue("") String fields
+    ) {
+        return Response.ok(
+                userInfoService.meWithFields(fields)
+        ).build();
+    }
+
+    @PATCH
+    @Path("/me")
+    public Response patchFields(
+            Map<String, Object> payload
+    ) {
+        userInfoService.pathInfo(payload);
+        return Response.noContent().build();
+    }
 
     @POST
     public Response create(@Valid CreateUserInfoReqDTO request) {

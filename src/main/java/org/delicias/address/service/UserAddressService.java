@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import org.delicias.address.domain.model.UserAddress;
 import org.delicias.address.domain.repository.UserAddressRepository;
+import org.delicias.address.dto.AddressDetailDTO;
 import org.delicias.address.dto.ConfirmAddressDTO;
 import org.delicias.address.dto.CreateUserAddressReqDTO;
 import org.delicias.address.dto.UserAddressItemDTO;
@@ -63,10 +64,10 @@ public class UserAddressService {
                 .build();
 
         repository.persist(newAddress);
-        return evaluateDefaultAddress(newAddress);
+        return evaluateAssignDefaultAddress(newAddress);
     }
 
-    private CurrentDefaultAddressDTO evaluateDefaultAddress(UserAddress address) {
+    private CurrentDefaultAddressDTO evaluateAssignDefaultAddress(UserAddress address) {
         UserInfo userInfo = userInfoRepository.findByIdOptional(address.getUserUUID())
                 .orElseThrow(() -> new NotFoundException("User Not Found"));
 
@@ -116,7 +117,7 @@ public class UserAddressService {
     }
 
     @Transactional
-    public void update(CreateUserAddressReqDTO req) {
+    public CurrentDefaultAddressDTO update(CreateUserAddressReqDTO req) {
 
         UserAddress userAddress = repository.findById(req.id());
 
@@ -125,6 +126,28 @@ public class UserAddressService {
         }
 
         userAddress.update(req);
+
+        return verifyIsDefaultAddress(userAddress);
+    }
+
+    private CurrentDefaultAddressDTO verifyIsDefaultAddress(UserAddress address) {
+        UserInfo userInfo = userInfoRepository.findByIdOptional(address.getUserUUID())
+                .orElseThrow(() -> new NotFoundException("User Not Found"));
+
+        if(userInfo.getDefaultUserAddress() != null && userInfo.getDefaultUserAddress().getId().equals(address.getId())) {
+            return CurrentDefaultAddressDTO.builder()
+                    .hasDefaultAddress(true)
+                    .typeAddress(address.getAddressType())
+                    .addressDesc(switch (address.getAddressType()) {
+                        case HOME, DEPTO, OTHER -> address.getDetails();
+                        case OFFICE -> address.getCompanyName();
+                    })
+                    .build();
+        }
+
+        return CurrentDefaultAddressDTO.builder()
+                .hasDefaultAddress(false)
+                .build();
     }
 
     public Set<UserAddressItemDTO> listUserAddress() {
@@ -152,6 +175,24 @@ public class UserAddressService {
                         )
                         .build()
                 ).collect(Collectors.toSet());
+    }
+
+    public AddressDetailDTO findById(Integer addressId)  {
+
+        UserAddress address = repository.findByIdOptional(addressId)
+                .orElseThrow(() -> new NotFoundException("Address Not Found"));
+
+        return AddressDetailDTO.builder()
+                .id(address.getId())
+                .latitude(address.getPosition().getY())
+                .longitud(address.getPosition().getX())
+                .typeAddress(address.getAddressType())
+                .details(address.getDetails())
+                .companyName(address.getCompanyName())
+                .street(address.getStreet())
+                .address(address.getAddress())
+                .indications(address.getIndications())
+                .build();
     }
 
 

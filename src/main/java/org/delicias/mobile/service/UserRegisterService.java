@@ -52,7 +52,7 @@ public class UserRegisterService {
         UserInfo userCurrent = repository.findByIdOptional(UUID.fromString(userUUID))
                         .orElseThrow(() -> new NotFoundException("Not Found User"));
 
-        keycloakService.completeRegister(req);
+        keycloakService.updateData(req.name(), req.lastName(), req.email());
 
         userCurrent.setName(req.name());
         userCurrent.setLastName(req.lastName());
